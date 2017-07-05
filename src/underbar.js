@@ -169,7 +169,7 @@
       collection = collection.slice(1);
     }
     _.each(collection, function(item) {
-      accumulator = iterator(accumulator, item)
+      accumulator = iterator(accumulator, item);
     });
     return accumulator;
   };
@@ -190,12 +190,21 @@
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
     // TIP: Try re-using reduce() here.
+    return _.reduce(collection, function(allMatch, item) {
+      if (!iterator) {
+        return !item ? false : allMatch;
+      }
+      return !iterator(item) ? false : allMatch;
+    }, true)
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
   _.some = function(collection, iterator) {
     // TIP: There's a very clever way to re-use every() here.
+    return !_.every(collection, function(item) {
+      return !iterator ? !item : !iterator(item);
+    });
   };
 
 
@@ -218,11 +227,29 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+    var argsArr = [].slice.call(arguments);
+
+    _.each(argsArr, function(sourceObj) {
+      for (let key in sourceObj) {
+        obj[key] = sourceObj[key];
+      }
+    });
+
+    return obj;
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    var argsArr = [].slice.call(arguments);
+
+    _.each(argsArr, function(sourceObj) {
+      for (let key in sourceObj) {
+        obj.hasOwnProperty(key) ? obj : obj[key] = sourceObj[key];
+      }
+    });
+
+    return obj;
   };
 
 
